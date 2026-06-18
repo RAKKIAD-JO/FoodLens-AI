@@ -1,0 +1,64 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  name          String
+  password      String
+  age           Int?
+  gender        String?  // "male" | "female" | "other"
+  weight        Float?   // in kg
+  height        Float?   // in cm
+  activityLevel String?  @map("activity_level") // "sedentary" | "light" | "moderate" | "active" | "very_active"
+  goal          String?  // "weight_loss" | "maintain" | "weight_gain"
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  foodRecords    FoodRecord[]
+  nutritionScans NutritionScan[]
+
+  @@map("users")
+}
+
+model FoodRecord {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  imageUrl        String   @map("image_url")
+  foodName        String   @map("food_name")
+  calories        Float
+  protein         Float
+  carbohydrates   Float
+  fat             Float
+  estimatedWeight Float    @map("estimated_weight")
+  confidence      Float    @default(100.0)
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("food_records")
+}
+
+model NutritionScan {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  imageUrl      String   @map("image_url")
+  calories      Float
+  protein       Float
+  carbohydrates Float
+  sugar         Float
+  fat           Float
+  sodium        Float
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("nutrition_scans")
+}
