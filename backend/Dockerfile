@@ -7,6 +7,7 @@ COPY package*.json ./
 COPY tsconfig.json ./
 COPY prisma ./prisma/
 
+RUN apk add --no-cache openssl
 RUN npm ci
 RUN npx prisma generate
 
@@ -22,6 +23,7 @@ COPY package*.json ./
 COPY tsconfig.json ./
 COPY prisma ./prisma/
 
+RUN apk add --no-cache openssl
 RUN npm ci --omit=dev
 RUN npx prisma generate
 
